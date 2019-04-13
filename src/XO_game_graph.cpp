@@ -32,12 +32,22 @@ int check_win_condition(std::string game_state){
 		return 1;
 	}
 
+
+	// diagonals
+	std::regex re3("\\|([x0]).*\\|.+\\1.+\\|.+.+\\1\\||\\|.*([x0])\\|.+\\2.+\\|\\2.+.+\\|");
+	std::smatch match3;
+
+	if (std::regex_search(game_state, match3, re3) && match3.size() > 1){
+		std::cout << "yes3\n";
+		return 1;
+	}
+
 	std::cout << "nope\n";
 	return 0;
 }
 
 int main() {
-	std::string game_state = "|-00|00x|00x|";
+	std::string game_state = "|x00|00x|0xx|";
 	check_win_condition(game_state);
 	return 0;
 }
