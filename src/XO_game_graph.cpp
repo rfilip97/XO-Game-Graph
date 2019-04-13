@@ -7,6 +7,7 @@
 //============================================================================
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <regex>
 
@@ -19,7 +20,6 @@ int check_win_condition(std::string game_state){
 	std::smatch match;
 
 	if (std::regex_search(game_state, match, re) && match.size() > 1){
-		std::cout << "yes\n";
 		return 1;
 	}
 
@@ -28,7 +28,6 @@ int check_win_condition(std::string game_state){
 	std::smatch match2;
 
 	if (std::regex_search(game_state, match2, re2) && match2.size() > 1){
-		std::cout << "yes2\n";
 		return 1;
 	}
 
@@ -38,11 +37,9 @@ int check_win_condition(std::string game_state){
 	std::smatch match3;
 
 	if (std::regex_search(game_state, match3, re3) && match3.size() > 1){
-		std::cout << "yes3\n";
 		return 1;
 	}
 
-	std::cout << "nope\n";
 	return 0;
 }
 
@@ -129,18 +126,19 @@ int generate_game_graph(Graph *graph, std::string piece){
 	return 0;
 }
 
+ofstream myfile;
+
 void printLevel(Graph graph, int desired, int current){
 
 	if(desired == current){
 
 		if(graph.next_graph_current_index > 0){
-			std::cout << std::endl << graph.state << " -> ";
+			myfile << "\n" << graph.state << " -> ";
 
 			for(int i = 0; i < graph.next_graph_current_index; i++) {
-				std::cout << graph.next_graph[i]->state << " ";
+				myfile << graph.next_graph[i]->state << " ";
 			}
 
-			std::cout << std::endl;
 		}
 	} else {
 		for(int i = 0; i < graph.next_graph_current_index; i++) {
@@ -152,7 +150,7 @@ void printLevel(Graph graph, int desired, int current){
 void print(Graph graph){
 
 	for(int i = 0; i < 9; i++) {
-		std::cout << " Level: " << i << std::endl;
+		myfile << "\n Level: " << i << "\n";
 		printLevel(graph, i, 0);
 	}
 }
@@ -161,10 +159,11 @@ int main() {
 
 	Graph graph("|---|---|---|");
 
+	myfile.open ("results.txt");
 	generate_game_graph(&graph, "0");
-
-	//std::cout << graph.next_graph[0]->next_graph[0]->next_graph[1]->state;
 	print(graph);
+
+	myfile.close();
 
 	return 0;
 }
