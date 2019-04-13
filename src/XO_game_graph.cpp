@@ -108,46 +108,63 @@ std::string current_piece(){
 	return turn == 0 ? "X" : "0";
 }
 
-int generate_game_graph(Graph *graph){
+int generate_game_graph(Graph *graph, std::string piece){
 
 	int index = graph->get_next_free_pos(0);
-	std::string piece = current_piece();
+
+	piece = (piece == "X") ? "0" : "X";
 
 	while(index != 0){
 
-		//std::cout << index << " ";
-		//Graph node(graph.state);
 		Graph *node = new Graph(graph->state);
 
 		node->state.replace(index, 1, piece);
 		graph->next_graph[graph->next_graph_current_index] = node;
 
-		generate_game_graph(graph->next_graph[graph->next_graph_current_index++]);
-
-
-
-
+		generate_game_graph(graph->next_graph[graph->next_graph_current_index++], piece);
 
 		index = graph->get_next_free_pos(index + 1);
 	}
 
-	/*for(int i = 0; i < graph.next_graph_current_index; i++) {
-		std::cout <<graph.next_graph[i]->state <<" ";
-	}
-
-	std::cout << std::endl;*/
-
 	return 0;
+}
+
+void printLevel(Graph graph, int desired, int current){
+
+	if(desired == current){
+
+		if(graph.next_graph_current_index > 0){
+			std::cout << std::endl << graph.state << " -> ";
+
+			for(int i = 0; i < graph.next_graph_current_index; i++) {
+				std::cout << graph.next_graph[i]->state << " ";
+			}
+
+			std::cout << std::endl;
+		}
+	} else {
+		for(int i = 0; i < graph.next_graph_current_index; i++) {
+			printLevel(*graph.next_graph[i], desired, current + 1);
+		}
+	}
+}
+
+void print(Graph graph){
+
+	for(int i = 0; i < 9; i++) {
+		std::cout << " Level: " << i << std::endl;
+		printLevel(graph, i, 0);
+	}
 }
 
 int main() {
 
 	Graph graph("|---|---|---|");
 
-	generate_game_graph(&graph);
+	generate_game_graph(&graph, "0");
 
-	std::cout << graph.next_graph[0]->next_graph[0]->next_graph[1]->state;
-
+	//std::cout << graph.next_graph[0]->next_graph[0]->next_graph[1]->state;
+	print(graph);
 
 	return 0;
 }
